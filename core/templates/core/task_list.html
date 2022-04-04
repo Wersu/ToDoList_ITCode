@@ -1,0 +1,22 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+
+<ol class="list-group list-group-numbered">
+  {% for task in object_list %}
+  <li class="list-group-item d-flex justify-content-between align-items-start {{task.get_status_item_bg}}">
+    <div class="ms-2 me-auto">
+      <div class="fw-bold"> <a href="{% url 'core:task_detail' task.pk %}" class="text-decoration-none text-dark"> {{task.name|capfirst}} </a> </div>
+      {{task.description|default:"-"}}
+    </div>
+    <div style="width:10%;">
+    <span class="badge rounded-pill {{task.get_status_bg}}" style="width:100%;">{{task.get_status_str}}</span>
+    <p class="fw-bold float-end">{{task.data|default:"-"}}</p>
+    </div>
+  </li>
+  {% endfor %}
+</ol>
+
+<a href="{% url 'core:task_create' %}" class="btn btn-success mt-3" style="width:100%"> Добавить задачу </a>
+
+{% endblock %}

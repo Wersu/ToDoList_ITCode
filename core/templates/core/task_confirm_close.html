@@ -1,0 +1,13 @@
+{% extends 'core/index.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+    <div class="alert alert-danger">
+        Вы действительно хотите завершить задачу "{{ object }}"
+    </div>
+
+    <form method="post">{% csrf_token %}
+        <button type="submit" class="btn btn-success">Да</button>
+        <a href="{% url 'core:task_list' %}" class="btn btn-primary"> Нет</a>
+    </form>
+{% endblock %}

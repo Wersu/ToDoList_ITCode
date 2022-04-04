@@ -1,0 +1,16 @@
+{% extends 'core/index.html' %}
+{% block content %}
+<div class="container">
+    <div class="d-grid column-flex">
+        <p class="fs-4"><span class="fw-bold">Задача:</span> {{object.name}}</p>
+        <p class="fs-4"><span class="fw-bold">Описание:</span><p class="fs-4">{{object.description}}</p></p>
+        <p class="fs-4"><span class="fw-bold">Дата:</span> {{object.data}}</p>
+        <p class="fs-4"><span class="fw-bold">Статус:</span> <span class="badge rounded-pill {{object.get_status_bg}}">{{object.get_status_str}}</span></p>
+        <div class="d-flex">
+            <a href="{% url 'core:task_close' object.pk %}" class="btn btn-success mx-1" style="width:33%"> Завершить </a>
+            <a href="{% url 'core:task_update' object.pk %}" class="btn btn-primary mx-1" style="width:33%"> Изменить </a>
+            <a href="{% url 'core:task_delete' object.pk %}" class="btn btn-danger mx-1" style="width:33%"> Удалить </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
