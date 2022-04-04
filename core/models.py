@@ -10,18 +10,6 @@ class Task(models.Model):
         Expired = 'Просрочено'
         Completed = 'Завершено'
 
-    StatusBG = {
-            Status.Active:  'bg-warning',
-            Status.Expired:  'bg-danger',
-            Status.Completed:  'bg-success',
-    }
-
-    StatusItemBG = {
-        Status.Active: '',
-        Status.Expired: 'list-group-item-danger',
-        Status.Completed: '',
-    }
-
     name = models.CharField('Задача', max_length=500)
     description = models.CharField('Описание', max_length=500, blank=True, null=True)
     data = models.DateField('Последний срок выполнения')
@@ -33,7 +21,26 @@ class Task(models.Model):
     def get_status_str(self):
         return self.status
 
+    StatusBG = {
+        Status.Active: 'bg-warning',
+        Status.Expired: 'bg-danger',
+        Status.Completed: 'bg-success',
+    }
 
+    StatusItemBG = {
+        Status.Active: '',
+        Status.Expired: 'list-group-item-danger',
+        Status.Completed: '',
+    }
+
+    def get_status_bg(self):
+        return self.StatusBG[self.status]
+
+    def get_status_item_bg(self):
+        return self.StatusItemBG[self.status]
+
+    def get_expired(self):
+        return self.data < datetime.date.today()
 
 
 class Meta:

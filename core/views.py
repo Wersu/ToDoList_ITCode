@@ -1,12 +1,11 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.template.context_processors import request
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView, UpdateView
-from django.views.generic.edit import BaseUpdateView
 
 import core.models
 import core.forms
+from core import models
+import datetime
 
 
 class TitleMixin:
@@ -37,6 +36,18 @@ class IndexView(TitleMixin, TemplateView):
 class Tasks(TitleMixin, ListView):
     title = 'Задачи'
 
+    # StatusBG = {
+    #     models.Task.Status.Active: 'bg-warning',
+    #     models.Task.Status.Expired: 'bg-danger',
+    #     models.Task.Status.Completed: 'bg-success',
+    # }
+    #
+    # StatusItemBG = {
+    #     models.Task.Status.Active: '',
+    #     models.Task.Status.Expired: 'list-group-item-danger',
+    #     models.Task.Status.Completed: '',
+    # }
+
     def get_status_bg(self):
         return self.StatusBG[self.status]
 
@@ -44,7 +55,7 @@ class Tasks(TitleMixin, ListView):
         return self.StatusItemBG[self.status]
 
     def get_expired(self):
-        return self.data<datetime.date.today()
+        return self.data < datetime.date.today()
 
     class Meta:
         model = core.models.Task
@@ -98,7 +109,7 @@ def test(request, pk):
     item = core.models.Task.objects.get(pk=pk)
     item.status = core.models.Task.Status.Completed
     item.save()
-    return render(request, 'core/task_list.html')
+    return reverse(request, 'core:task_list')
 
 
 #class TaskComplite(TitleMixin, BaseUpdateView):
