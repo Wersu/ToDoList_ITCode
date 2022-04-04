@@ -33,14 +33,7 @@ class Task(models.Model):
     def get_status_str(self):
         return self.status
 
-    def get_status_bg(self):
-        return self.StatusBG[self.status]
 
-    def get_status_item_bg(self):
-        return self.StatusItemBG[self.status]
-
-    def get_expired(self):
-        return self.data<datetime.date.today()
 
 
 class Meta:

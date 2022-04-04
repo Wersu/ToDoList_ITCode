@@ -1,7 +1,132 @@
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.template.context_processors import request
+from django.urls import reverse
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic.edit import BaseUpdateView
+
 import core.models
+import core.forms
 
 
-def index(request):
-    tasks = core.models.Task.objects.all()
-    return render(request, 'core/index.html', {'objects_list': tasks})
+class TitleMixin:
+    title: str = None
+
+    def get_title(self):
+        return self.title
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['title'] = self.get_title()
+        return context
+
+
+class IndexView(TitleMixin, TemplateView):
+    template_name = 'core/index.html'
+    title = 'Главная страница'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['info'] = self.get_info()
+        return context
+
+    def get_info(self):
+        return 'Главная страница'
+
+
+class Tasks(TitleMixin, ListView):
+    title = 'Задачи'
+
+    def get_status_bg(self):
+        return self.StatusBG[self.status]
+
+    def get_status_item_bg(self):
+        return self.StatusItemBG[self.status]
+
+    def get_expired(self):
+        return self.data<datetime.date.today()
+
+    class Meta:
+        model = core.models.Task
+        fields = ('name',)
+
+    def get_queryset(self):
+        name = self.request.GET.get('name')
+
+        for i in core.models.Task.objects.all():
+            if i.status == core.models.Task.Status.Active:
+                if i.get_expired():
+                    i.status = core.models.Task.Status.Expired
+                    i.save()
+
+        queryset = core.models.Task.objects.all()
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        return queryset
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        return context
+
+
+class TaskDetail(TitleMixin, DetailView):
+    title = 'Детали задачи'
+    queryset = core.models.Task.objects.all()
+
+
+class TaskUpdate(TitleMixin, UpdateView):
+    model = core.models.Task
+    form_class = core.forms.TaskEdit
+
+    def get_title(self):
+        return f'Изменение задачи "{str(self.get_object())}"'
+
+    def get_success_url(self):
+        return reverse('core:task_list')
+
+
+class TaskCreate(TitleMixin, CreateView):
+    model = core.models.Task
+    form_class = core.forms.TaskEdit
+    title = 'Добавление задачи'
+
+    def get_success_url(self):
+        return reverse('core:task_list')
+
+
+def test(request, pk):
+    item = core.models.Task.objects.get(pk=pk)
+    item.status = core.models.Task.Status.Completed
+    item.save()
+    return render(request, 'core/task_list.html')
+
+
+#class TaskComplite(TitleMixin, BaseUpdateView):
+#    model = core.models.Task
+
+#    def get_title(self):
+#        return f'Завершение задачи {str(self.get_object())}'
+
+#    def test(request, pk):
+#        item = core.models.Task.objects.get(pk=pk)
+#        item.status = core.models.Task.Status.Completed
+#        item.save()
+#        return render(request, 'core/task_list.html')
+
+#    def get_success_url(self):
+#        return reverse('core:task_list')
+
+
+# class TaskClose(TitleMixin, ListView):
+#     def get_success_url(self):
+#         return reverse('core:task_list')
+
+
+class TaskDelete(TitleMixin, DeleteView):
+    model = core.models.Task
+
+    def get_title(self):
+        return f'Удаление задачи {str(self.get_object())}'
+
+    def get_success_url(self):
+        return reverse('core:task_list')
