@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView, UpdateView
 
@@ -36,27 +36,6 @@ class IndexView(TitleMixin, TemplateView):
 class Tasks(TitleMixin, ListView):
     title = 'Задачи'
 
-    # StatusBG = {
-    #     models.Task.Status.Active: 'bg-warning',
-    #     models.Task.Status.Expired: 'bg-danger',
-    #     models.Task.Status.Completed: 'bg-success',
-    # }
-    #
-    # StatusItemBG = {
-    #     models.Task.Status.Active: '',
-    #     models.Task.Status.Expired: 'list-group-item-danger',
-    #     models.Task.Status.Completed: '',
-    # }
-
-    def get_status_bg(self):
-        return self.StatusBG[self.status]
-
-    def get_status_item_bg(self):
-        return self.StatusItemBG[self.status]
-
-    def get_expired(self):
-        return self.data < datetime.date.today()
-
     class Meta:
         model = core.models.Task
         fields = ('name',)
@@ -78,6 +57,8 @@ class Tasks(TitleMixin, ListView):
     def get_context_data(self):
         context = super().get_context_data()
         return context
+
+    models.Task.get_status_str()
 
 
 class TaskDetail(TitleMixin, DetailView):
@@ -105,32 +86,11 @@ class TaskCreate(TitleMixin, CreateView):
         return reverse('core:task_list')
 
 
-def test(request, pk):
+def TaskClose(pk):
     item = core.models.Task.objects.get(pk=pk)
     item.status = core.models.Task.Status.Completed
     item.save()
-    return reverse(request, 'core:task_list')
-
-
-#class TaskComplite(TitleMixin, BaseUpdateView):
-#    model = core.models.Task
-
-#    def get_title(self):
-#        return f'Завершение задачи {str(self.get_object())}'
-
-#    def test(request, pk):
-#        item = core.models.Task.objects.get(pk=pk)
-#        item.status = core.models.Task.Status.Completed
-#        item.save()
-#        return render(request, 'core/task_list.html')
-
-#    def get_success_url(self):
-#        return reverse('core:task_list')
-
-
-# class TaskClose(TitleMixin, ListView):
-#     def get_success_url(self):
-#         return reverse('core:task_list')
+    return redirect('core:task_list')
 
 
 class TaskDelete(TitleMixin, DeleteView):

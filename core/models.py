@@ -10,17 +10,6 @@ class Task(models.Model):
         Expired = 'Просрочено'
         Completed = 'Завершено'
 
-    name = models.CharField('Задача', max_length=500)
-    description = models.CharField('Описание', max_length=500, blank=True, null=True)
-    data = models.DateField('Последний срок выполнения')
-    status = models.CharField('Статус', max_length=500, choices=Status.choices, default=Status.Active, editable=False)
-
-    def __str__(self):
-        return self.name
-
-    def get_status_str(self):
-        return self.status
-
     StatusBG = {
         Status.Active: 'bg-warning',
         Status.Expired: 'bg-danger',
@@ -32,6 +21,17 @@ class Task(models.Model):
         Status.Expired: 'list-group-item-danger',
         Status.Completed: '',
     }
+
+    name = models.CharField('Задача', max_length=500)
+    description = models.CharField('Описание', max_length=500, blank=True, null=True)
+    data = models.DateField('Последний срок выполнения')
+    status = models.CharField('Статус', max_length=500, choices=Status.choices, default=Status.Active, editable=False)
+
+    def __str__(self):
+        return self.name
+
+    def get_status_str(self):
+        return self.status
 
     def get_status_bg(self):
         return self.StatusBG[self.status]
