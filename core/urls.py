@@ -9,7 +9,7 @@ urlpatterns = [
     path('tasks/', core.views.Tasks.as_view(), name='task_list'),
     path('tasks/<int:pk>/', core.views.TaskDetail.as_view(), name='task_detail'),
     path('tasks/create/', core.views.TaskCreate.as_view(), name='task_create'),
-    path('tasks/<int:pk>/close', core.views.TaskClose, name='task_close'),
+    path('tasks/<int:pk>/close', core.views.task_close, name='task_close'),
     path('tasks/<int:pk>/update', core.views.TaskUpdate.as_view(), name='task_update'),
     path('tasks/<int:pk>/delete', core.views.TaskDelete.as_view(), name='task_delete'),
 ]

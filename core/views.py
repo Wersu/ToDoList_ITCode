@@ -58,8 +58,6 @@ class Tasks(TitleMixin, ListView):
         context = super().get_context_data()
         return context
 
-    models.Task.get_status_str()
-
 
 class TaskDetail(TitleMixin, DetailView):
     title = 'Детали задачи'
@@ -86,7 +84,7 @@ class TaskCreate(TitleMixin, CreateView):
         return reverse('core:task_list')
 
 
-def TaskClose(pk):
+def task_close(request,pk):
     item = core.models.Task.objects.get(pk=pk)
     item.status = core.models.Task.Status.Completed
     item.save()
